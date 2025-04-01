@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LALR Test</title>
+
+  <style>
+    body {
+  background: var(--light);
+}
+
+  </style>
+
+  <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@latest/dist/pptxgen.min.js"></script>
+</head>
+<body>
+  <div class="container py-3">
+  <h1 class="text-primary font-weight-light">LALR PPT Generator</h1>
+  <h5 class="text-secondary font-weight-light">Generate LALR Powerpoint From Web</h5>
+  <h6 class="bg-white border p-3 my-5">
+   
+
+  </h6>
+    <!-- New Form -->
+    <form class="bg-light p-4 border rounded">
+        <div class="form-group">
+            <label for="incidentNo">Incident No</label>
+            <input type="text" class="form-control" id="incidentNo" name="incidentNo" placeholder="Enter Incident No">
+        </div>
+        <div class="form-group">
+            <label for="appliance">Appliance</label>
+            <input type="text" class="form-control" id="appliance" name="appliance" placeholder="Enter Appliance">
+        </div>
+        <div class="form-group">
+            <label for="timeOfCall">Time of Call</label>
+            <input type="time" class="form-control" id="timeOfCall" name="timeOfCall">
+        </div>
+        <div class="form-group">
+            <label for="uploadImage">Upload Map</label>
+            <input type="file" class="form-control-file" id="uploadImage" name="uploadImage" accept="image/*">
+        </div>
+        <button type="button" class="btn btn-primary px-5" onclick="doDemo()">
+            Generate LALR Powerpoint
+        </button>
+    </form>
+
+
+ 
+
+  <div class="mt-5">
+    <small>
+      GitHub Home
+      <a class="pl-1" href="https://github.com/gitbrent/PptxGenJS/">PptxGenJS</a>
+    </small>
+  </div>
+</div>
+
+<script>
+    let pptx = new PptxGenJS();
+    $('small').before('<code class="d-block text-black-50 mb-3">(pptxgenjs version: ' + pptx.version + ')</code>');
+
+    // Function to generate PowerPoint using form inputs
+    window.doDemo = function doDemo() {
+        // Retrieve form values
+        const incidentNo = document.getElementById('incidentNo').value;
+        const appliance = document.getElementById('appliance').value;
+        const timeOfCall = document.getElementById('timeOfCall').value;
+        const uploadImage = document.getElementById('uploadImage').files[0];
+
+        // Create a new PowerPoint presentation
+        let pptx = new PptxGenJS();
+        let slide = pptx.addSlide();
+
+        // Define table data
+        let tableData = [
+            [{ text: "Incident No", options: { bold: true } }, { text: "Appliance", options: { bold: true } }, { text: "Time of Call", options: { bold: true } }],
+            [incidentNo, appliance, timeOfCall],
+            [{ text: "Uploaded Image", options: { colspan: 3, align: "center", bold: true } }],
+            [{ text: "Additional Info", options: { bold: true } }, { text: "Merged Column Content", options: { colspan: 2, align: "center", bold: true } }]
+        ];
+
+        // Centralize the table on the slide
+        const tableWidth = 8.0; // Width of the table
+        const tableHeight = 4.0; // Height of the table
+        const slideWidth = 10.0; // Default slide width in inches
+        const slideHeight = 5.63; // Default slide height in inches
+
+        const tableX = (slideWidth - tableWidth) / 2; // Center horizontally
+        const tableY = (slideHeight - tableHeight) / 2; // Center vertically
+
+        // Add table to the slide
+        slide.addTable(tableData, {
+            x: tableX,
+            y: tableY,
+            w: tableWidth,
+            h: tableHeight,
+            rowH: [0.5, 0.5, 2.0, 0.5], // Adjust row heights
+            border: { pt: 1, color: "000000" },
+            fill: "F1F1F1",
+            fontSize: 14,
+            color: "000000"
+        });
+
+        // Add image to the slide if an image is uploaded
+        if (uploadImage) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                slide.addImage({
+                    data: e.target.result,
+                    x: tableX, // Align with the table's x position
+                    y: tableY + 1.0, // Position the image within Row 3
+                    w: tableWidth, // Adjust width to fit within the table
+                    h: 2.0  // Adjust height to fit within Row 3
+                });
+
+                // Save the PowerPoint file
+                pptx.writeFile('LALR_Presentation');
+            };
+            reader.readAsDataURL(uploadImage);
+        } else {
+            // Save the PowerPoint file without an image
+            pptx.writeFile('LALR_Presentation');
+        }
+    };
+</script>
+
+</body>
+</html>
